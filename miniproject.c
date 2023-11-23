@@ -1,23 +1,26 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include<ctype.h>
+#include <ctype.h>
 
+typedef struct Phone{
 
-typedef struct Contact {
+}Phonebook;
+
+typedef struct Contact 
+{
     char name[50];
     char phone[15];
     int fav;
     struct Contact* next;
 }Contact;
 
-typedef struct Groups{
+typedef struct Groups
+{
     char grpnam[100];
     Contact * grp;
     struct Groups* next;
 }GRP;
-
-
 GRP* allgrps = NULL;
 Contact* mostRecentContact = NULL;
 Contact* phonebook = NULL;
@@ -331,8 +334,13 @@ void favContacts() {
 }
 
 void mostrctcontact(){
+if(mostRecentContact != NULL){
 printf("Most Recent Contact Added:\n");
 printf("Name:%s, Phone:%s",mostRecentContact->name,mostRecentContact->phone);
+}
+else{
+    printf("\nNo contacts added\n");
+}
 }
 
 void freeContacts(Contact** head) {
@@ -365,10 +373,13 @@ void addToGroup(Contact* contact, const char groupName[]) {
 
 void displayGroups() {
     GRP* current = allgrps;
+    int count = 1;
     while (current != NULL) {
-        printf("%s\n", current->grpnam);
+        printf("\n%d) %s", count,current->grpnam);
         current = current->next;
+        count+=1;
     }
+    printf("\n");
 }
 
 void displayGroupContacts(const char groupName[]) {
@@ -420,20 +431,41 @@ void removeFromGroup(const char contactName[], const char groupName[]) {
     printf("Group '%s' not found.\n", groupName);
 }
 
+void updateContactInGroup(GRP* group, const char name[]) {
+    Contact* temp = group->grp;
+    while (temp != NULL) {
+        if (strcmp(temp->name, name) == 0) {
+            char newPhone[15];
+            char newname[50];
+            char in[1];
+            printf("Enter the new name for %s: ", name);
+            scanf("%s", newname);
+            printf("Enter the new phone number for %s: ", name);
+            scanf("%s", newPhone);
+
+            strcpy(temp->phone, newPhone);
+            strcpy(temp->name, newname);
+
+            printf("Do you want to change the favorite status of %s in the group (y/n): ", name);
+            scanf("%s", in);
+            if (strcmp(in, "y") == 0) {
+                temp->fav = !temp->fav;
+            }
+
+            printf("Contact updated in the group successfully.\n");
+            return;
+        }
+        temp = temp->next;
+    }
+
+    printf("Contact '%s' not found in the group.\n", name);
+}
+
 void updateInGroup(const char contactName[], const char groupName[]) {
     GRP* current = allgrps;
     while (current != NULL) {
         if (strcmp(current->grpnam, groupName) == 0) {
-            Contact* temp = current->grp;
-            while (temp != NULL) {
-                if (strcmp(temp->name, contactName) == 0) {
-                    updateContact(contactName); // You can modify this to update specific fields
-                    printf("Contact updated in the group successfully.\n");
-                    return;
-                }
-                temp = temp->next;
-            }
-            printf("Contact '%s' not found in group '%s'.\n", contactName, groupName);
+            updateContactInGroup(current, contactName);
             return;
         }
         current = current->next;
@@ -441,19 +473,18 @@ void updateInGroup(const char contactName[], const char groupName[]) {
     printf("Group '%s' not found.\n", groupName);
 }
 
-void createGroup(const char groupName[]) {
+void createDefGroup(const char groupName[]) {
     GRP* newGroup = (GRP*)malloc(sizeof(GRP));
     strcpy(newGroup->grpnam, groupName);
     newGroup->grp = NULL;
     newGroup->next = allgrps;
     allgrps = newGroup;
-    printf("Group '%s' created successfully.\n", groupName);
 }
 
 void createDefaultGroups() {
-    createGroup("home");
-    createGroup("work");
-    createGroup("friends");
+    createDefGroup("friends");
+    createDefGroup("work");
+    createDefGroup("home");
 }
 
 int main() {
