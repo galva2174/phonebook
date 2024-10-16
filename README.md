@@ -1,4 +1,6 @@
 Project Overview
+
+
 This project is a basic phonebook management system in C, designed to help users manage their contacts efficiently. The system allows the user to perform several operations, such as adding, removing, updating contacts, marking favorites, organizing contacts into groups, and searching by name or phone number.
 
 Features
